@@ -2,16 +2,23 @@
   "name": "aeeterna_backend",
   "version": "1.0.0",
   "description": "",
+  "keywords": [],
+  "homepage": "https://github.com/Antimo-m/Aeeterna_backend#readme",
+  "bugs": {
+    "url": "https://github.com/Antimo-m/Aeeterna_backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Antimo-m/Aeeterna_backend.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
     "dev": "node --watch app.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1",
