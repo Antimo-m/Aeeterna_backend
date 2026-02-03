@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import connection from "./db/createConnection.js"; 
+import productRouter from "./routers/product.js"
+import errorHandler from "./middlewares/errorHandler.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -11,6 +13,9 @@ app.use(cors(
 app.get("/", (req, res) => {
     res.send("Aeeterna attivo");
 });
+
+app.use("/api/product", productRouter);
+app.use(errorHandler); //import global middlerware errorHandler
 
 app.listen(port, () => {
     console.log(`Server running on ${port}`);
