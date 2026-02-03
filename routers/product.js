@@ -1,5 +1,6 @@
 import express from "express"
 import controller from "../controllers/productController.js"
+import prova from "../controllers/fileindex.js";
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.get("/bestseller", controller.bestSeller);
 router.get("/newarrivals", controller.newArrivals);
 
 // INDEX PRODUCT
-router.get("/", controller.index);
+router.get("/", prova);
 
 // SHOW CON SLUG
 router.get("/:slug",controller.showConSlug)
