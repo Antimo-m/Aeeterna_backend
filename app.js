@@ -24,6 +24,7 @@ app.get("/", (req, res) => {
 app.use("/api/product", productRouter);
 app.use("/api/invoice", invoiceRouter);
 app.use("/api/customer", customerRouter);
+app.use("*", notFound);
 app.use(errorHandler); //import global middlerware errorHandler
 
 app.listen(port, () => {
