@@ -44,6 +44,43 @@ function newArrivals(req, res, next) {
 
 }
 
+function showConSlug(req, res, next) {
+    const slug = req.params.slug;
+    console.log("Sto cercando lo slug:", slug);
+
+    const query = `SELECT products.* ,skin_types.name AS "skin_type", categories.name AS 
+    "category_name" FROM products INNER JOIN skin_types ON products.id_skin_type = skin_types.id
+    INNER JOIN categories ON products.id_category = categories.id WHERE products.slug = ?`;
+    connection.query(query, [slug], (err, results) => {
+        if (err) return next(err);
+
+        if (results.length === 0) {
+            res.status(404);
+            return res.json({
+                error: "NOT FOUND",
+                message: "Prodotto non trovato"
+            })
+        }
+        const product = results[0];
+        const sql = `SELECT  ingredients.id, ingredients.name FROM products INNER JOIN product_ingredient
+        ON products.id = product_ingredient.id_product INNER JOIN ingredients ON 
+        product_ingredient.id_ingredient = ingredients.id
+        WHERE products.slug = ?`
+
+        connection.query(sql, [slug], (err, resultsIngredients) => {
+            if (err) return next(err);
+
+            const finalProduct = {
+                ...product,
+                ingredients: resultsIngredients
+            }
+            res.json(finalProduct);
+        })
+    })
+
+
+}
+
 function index(req, res, next) {
 
 
@@ -52,5 +89,6 @@ function index(req, res, next) {
 export default {
     bestSeller,
     newArrivals,
-    index
+    index,
+    showConSlug
 }
