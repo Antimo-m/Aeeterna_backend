@@ -5,6 +5,8 @@ dotenv.config();
 
 console.log("DB_HOST:", process.env.DB_HOST); 
 
+console.log("DB_NAME:", process.env.DB_NAME);
+
 const connection = mysql2.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
