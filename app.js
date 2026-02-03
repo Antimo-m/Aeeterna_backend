@@ -5,6 +5,7 @@ import productRouter from "./routers/product.js"
 import customerRouter from "./routers/customer.js"
 import errorHandler from "./middlewares/errorHandler.js";
 import invoiceRouter from "./routers/invoice.js";
+import notFound from "./middlewares/notFound.js";
 
 const app = express();
 
