@@ -22,11 +22,29 @@ VALUES (?, ?, ?, ?, ?, ?)`;
       if (err) {
         return next(err);
       }
-      res.json({ message: "Ordine registrato con successo", invoiceId: results.insertId });
+
+      const productInvoice = `INSERT INTO product_invoice (id_product, id_invoice, quantity, price_at_purchase) VALUES (?,?,?,?)`;
+
+      data.products.forEach((curProduct) => {
+        connection.query(
+          productInvoice,
+          [
+            curProduct.id_product,
+            results.insertId,
+            curProduct.quantity,
+            curProduct.price_at_purchase,
+          ],
+          (err, resultProduct) => {
+            if (err) return next(err);
+          },
+        );
+      });
+      res.status(201).json({
+        message: "Ordine registrato con successo",
+        invoiceId: results.insertId,
+      });
     },
   );
-  
 }
 
 export default { storeInvoice };
-
