@@ -14,3 +14,5 @@ router.get("/newarrivals", controller.newArrivals);
 
 // INDEX PRODUCT
 router.get("/", controller.index);
+
+export default router
