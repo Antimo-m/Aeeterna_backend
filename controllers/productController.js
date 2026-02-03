@@ -44,6 +44,28 @@ function newArrivals(req, res, next) {
 
 }
 
+function showConSlug(req, res, next) {
+    const slug = req.params.slug;
+    console.log("Sto cercando lo slug:", slug);
+
+    const query = `SELECT * FROM products WHERE products.slug = ?`;
+    connection.query(query, [slug], (err, results) => {
+        if (err) return next(err);
+
+        if (results.length === 0) {
+            res.status(404);
+            return res.json({
+                error: "NOT FOUND",
+                message: "Prodotti not found"
+            })
+        }
+        const product = results[0];
+        res.json(product);
+    })
+
+
+}
+
 function index(req, res, next) {
 
 
@@ -52,5 +74,6 @@ function index(req, res, next) {
 export default {
     bestSeller,
     newArrivals,
-    index
+    index,
+    showConSlug
 }

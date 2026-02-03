@@ -15,6 +15,9 @@ router.get("/newarrivals", controller.newArrivals);
 // INDEX PRODUCT
 router.get("/", controller.index);
 
+// SHOW CON SLUG
+router.get("/:slug",controller.showConSlug)
+
 
 
 export default router
