@@ -7,6 +7,7 @@ import errorHandler from "./middlewares/errorHandler.js";
 import invoiceRouter from "./routers/invoice.js";
 import notFound from "./middlewares/notFound.js";
 import sendEmail from "./mail/orderEmail.js";
+import sendPopup from "./mail/popup.js";
 
 const app = express();
 
@@ -26,7 +27,9 @@ app.get("/", (req, res) => {
 app.use("/api/product", productRouter);
 app.use("/api/invoice", invoiceRouter);
 app.use("/api/customer", customerRouter);
-app.post("/api/sendemail", sendEmail)
+app.post("/api/sendemail", sendEmail);
+app.post("/api/sendpopup", sendPopup);
+
 app.use(errorHandler); //import global middlerware errorHandler
 
 app.use(notFound);
