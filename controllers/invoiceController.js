@@ -1,5 +1,7 @@
 import connection from "../db/createConnection.js";
 
+
+
 function storeInvoice(req, res, next) {
   // Creiamo un nuovo oggetto ordine
   const data = req.body;
@@ -39,6 +41,7 @@ VALUES (?, ?, ?, ?, ?, ?)`;
           },
         );
       });
+
       res.status(201).json({
         message: "Ordine registrato con successo",
         invoiceId: results.insertId,
