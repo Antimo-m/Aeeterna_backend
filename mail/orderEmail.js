@@ -18,11 +18,16 @@ function sendEmail(req, res, next) {
             html: `
                 <body>
                     <h3>Il tuo ordine #${invoiceId} è stato ricevuto con successo</h3>
-                  <div>
-                   ${products
-                    .map(product => `<section>${product.name}</section>`)
+                    <section style="padding: 30px; display: flex; flex-direction: column;">
+                        ${products
+                    .map(product => `
+                            <div style="display: flex; justify-content: space-between; border: 1px solid gray; padding: 20px 10px;" >
+                                <span>${product.name}</span>
+                                <span>${product.price}€</span>
+                            </div>
+                            `)
                     .join("")}
-                 </div>
+                    </section>
                 </body>
                 `
         },
