@@ -6,3 +6,4 @@ const router = express.Router();
 router.post("/", customerController.store)
 
 export default router;
+
