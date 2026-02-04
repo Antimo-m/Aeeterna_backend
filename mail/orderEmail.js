@@ -3,7 +3,7 @@ import transporter from "./trasporter.js";
 function sendEmail(req, res, next) {
     console.log("Invio email...");
 
-    const { invoiceId } = req.body;
+    const { invoiceId, products } = req.body;
 
     if (!invoiceId) {
         return res.status(400).json({ error: "invoiceId mancante" });
@@ -15,9 +15,16 @@ function sendEmail(req, res, next) {
             to: "kigek96440@helesco.com",
             subject: "Conferma ordine",
             text: `Il tuo ordine #${invoiceId} è stato ricevuto con successo`,
-            html: `<body> 
-            <h3>Il tuo ordine #${invoiceId} è stato ricevuto con successo</h3> 
-            </body>`
+            html: `
+                <body>
+                    <h3>Il tuo ordine #${invoiceId} è stato ricevuto con successo</h3>
+                  <div>
+                   ${products
+                    .map(product => `<section>${product.name}</section>`)
+                    .join("")}
+                 </div>
+                </body>
+                `
         },
         (err) => {
             if (err) return next(err);
