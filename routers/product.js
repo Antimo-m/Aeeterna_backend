@@ -16,7 +16,7 @@ router.get("/newarrivals", controller.newArrivals);
 router.get("/", controller.index);
 
 // SHOW CON SLUG
-router.get("/:slug",controller.showConSlug)
+router.get("/:slug",controller.showWithSlug)
 
 
 

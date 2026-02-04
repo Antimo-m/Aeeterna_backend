@@ -44,7 +44,7 @@ function newArrivals(req, res, next) {
 
 }
 
-function showConSlug(req, res, next) {
+function showWithSlug(req, res, next) {
     const slug = req.params.slug;
     console.log("Sto cercando lo slug:", slug);
 
@@ -70,11 +70,25 @@ function showConSlug(req, res, next) {
         connection.query(sql, [slug], (err, resultsIngredients) => {
             if (err) return next(err);
 
-            const finalProduct = {
+            let finalProduct = {
                 ...product,
                 ingredients: resultsIngredients
             }
+        const sqlImage= `SELECT images.* FROM products INNER JOIN images ON products.id = images.id_product WHERE products.slug = ?`
+
+        connection.query(sqlImage, [slug], (err, resultsImage) => {
+            if (err) return next(err);
+
+             finalProduct = {
+                ...finalProduct,
+                image: [
+                    {path:finalProduct.image},
+                    ...resultsImage
+                ]
+            }
             res.json(finalProduct);
+        } )
+            
         })
     })
 
@@ -215,5 +229,5 @@ export default {
     bestSeller,
     newArrivals,
     index,
-    showConSlug
+    showWithSlug
 }
