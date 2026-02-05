@@ -124,37 +124,11 @@ function showWithSlug(req, res, next) {
             id_skin_type,
             created_at,
             updated_at,
+            
             ...publicProduct
         } = product;
 
 
-        /* const sql = `SELECT  ingredients.id, ingredients.name FROM products INNER JOIN product_ingredient
-        ON products.id = product_ingredient.id_product INNER JOIN ingredients ON 
-        product_ingredient.id_ingredient = ingredients.id
-        WHERE products.slug = ?`
-
-        connection.query(sql, [slug], (err, resultsIngredients) => {
-            if (err) return next(err);
-
-            let finalProduct = {
-                ...product,
-                ingredients: resultsIngredients
-            }
-        const sqlImage= `SELECT images.* FROM products INNER JOIN images ON products.id = images.id_product WHERE products.slug = ?`
-
-        connection.query(sqlImage, [slug], (err, resultsImage) => {
-            if (err) return next(err);
-
-             finalProduct = {
-                ...finalProduct,
-                image: [
-                    {path:finalProduct.image},
-                    ...resultsImage
-                ]
-            }
-            res.json(finalProduct);
-        } )
-             */
         const ingredientsQuery = `
             SELECT ingredients.id, ingredients.name
             FROM products
@@ -179,10 +153,11 @@ function showWithSlug(req, res, next) {
 
             connection.query(imagesQuery, [slug], (err, imagesResults) => {
                 if (err) return next(err);
-                const baseUrl = `${req.protocol}://${req.get("host")}`;  
+                const baseUrl = `${req.protocol}://${req.get("host")}/image/`;  
                 //  risposta finale 
                 res.json({
                     ...publicProduct,
+                    image :`${baseUrl}${product.image}`,
                     price : Number(product.price),
                     ingredients: ingredientsResults,
                     images: [
