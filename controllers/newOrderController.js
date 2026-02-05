@@ -65,17 +65,35 @@ function storeNewOrder(req, res, next) {
                     productInvoiceSql,
                     [curProduct.id_product, newInvoiceId, curProduct.quantity, curProduct.price_at_purchase],
                     (err) => {
-                        if (err && !hasError) {
+                        if (err && !hasError ) {
                             hasError = true;
                             return next(err);
                         }
                         
                         completed++;
                         if (completed === products.length && !hasError) {
-                            req.body.invoiceId = newInvoiceId;
-                            req.body.customerEmail = email; // Usiamo l'email validata sopra
+
+                            const sqlProducts = `
+                            SELECT
+                            products.name,
+                            product_invoice.quantity,
+                            product_invoice.price_at_purchase 
+                            FROM product_invoice
+                            JOIN products
+                            ON  products.id = product_invoice.id_product
+                            WHERE product_invoice.id_invoice = ?
+                            `
+
+                            connection.query(sqlProducts,[newInvoiceId], (err, invoice) => {
+                                if (err) return next(err)
+                                     req.body.invoiceId = newInvoiceId;
+                            req.body.customerEmail = email;
+                            req.body.products = invoice
+                            // Usiamo l'email validata sopra
                             // Passiamo al middleware successivo (sendEmail)
                             next();
+                            })
+                           
                         }
                     }
                 );

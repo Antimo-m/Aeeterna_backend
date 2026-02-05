@@ -23,7 +23,7 @@ function sendEmail(req, res, next) {
                     .map(product => `
                             <div style="display: flex; justify-content: space-between; border: 1px solid gray; padding: 20px 10px;" >
                                 <span>${product.name}</span>
-                                <span>${product.price}€</span>
+                                <span>${product.price_at_purchase}€</span>
                             </div>
                             `)
                     .join("")}
