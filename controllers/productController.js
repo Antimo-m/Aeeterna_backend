@@ -33,7 +33,7 @@ function bestSeller(req, res, next) {
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
-            image: `${baseUrl}/image/${product.image}`
+            image: `${baseUrl}/image/${product.image}`//aggiungeto /image
         }));
 
         res.json(formattedResults);
@@ -69,7 +69,7 @@ function newArrivals(req, res, next) {
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
-            image: `${baseUrl}/image/${product.image}`
+            image: `${baseUrl}/image/${product.image}`//aggiungeto /image
         }));
 
         res.json(formattedResults);
