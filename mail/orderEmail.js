@@ -3,7 +3,7 @@ import transporter from "./trasporter.js";
 function sendEmail(req, res, next) {
     console.log("Invio email...");
 
-    const { invoiceId, products } = req.body;
+    const { invoiceId, customerEmail, products } = req.body;
 
     if (!invoiceId) {
         return res.status(400).json({ error: "invoiceId mancante" });
@@ -12,7 +12,7 @@ function sendEmail(req, res, next) {
     const info = transporter.sendMail(
         {
             from: process.env.MAIL_USER,
-            to: "kigek96440@helesco.com",
+            to: customerEmail,
             subject: "Conferma ordine",
             text: `Il tuo ordine #${invoiceId} è stato ricevuto con successo`,
             html: `
@@ -38,7 +38,7 @@ function sendEmail(req, res, next) {
             transporter.sendMail(
                 {
                     from: process.env.MAIL_USER,
-                    to: customerEmail,
+                    to: "kigek96440@helesco.com",
                     subject: "Nuovo ordine ricevuto",
                     text: `Nuovo ordine creato. ID ordine: ${invoiceId}`
                 },
