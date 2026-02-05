@@ -33,7 +33,8 @@ function bestSeller(req, res, next) {
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
-            image: `${baseUrl}/image/${product.image}`//aggiungeto /image
+            quantity : Number(product.quantity),
+            image: `${baseUrl}${product.image}`
         }));
 
         res.json(formattedResults);
@@ -69,7 +70,7 @@ function newArrivals(req, res, next) {
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
-            image: `${baseUrl}/image/${product.image}`//aggiungeto /image
+            image: `${baseUrl}${product.image}`//aggiungeto /image
         }));
 
         res.json(formattedResults);
@@ -177,10 +178,10 @@ function showWithSlug(req, res, next) {
                     ...product,
                     ingredients: ingredientsResults,
                     images: [
-                        { path: `${baseUrl}/images/${product.image}` },
+                        { path: `${baseUrl}${product.image}` },
                          ...imagesResults.map(img => ({
                             ...img,
-                            path: `${baseUrl}/images/${img.path}`
+                            path: `${baseUrl}${img.path}`
                         }))
                     ]
                 })
