@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(cors(
     { origin: process.env.FRONTEND_URL }));
 
-app.use(express.json());
+
 
 app.get("/", (req, res) => {
     res.send("Aeeterna attivo");
