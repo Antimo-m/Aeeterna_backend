@@ -2,9 +2,8 @@ import express from "express";
 import cors from "cors";
 import connection from "./db/createConnection.js";
 import productRouter from "./routers/product.js"
-import customerRouter from "./routers/customer.js"
 import errorHandler from "./middlewares/errorHandler.js";
-import invoiceRouter from "./routers/invoice.js";
+import newOrderRouter from "./routers/newOrder.js";
 import notFound from "./middlewares/notFound.js";
 import sendEmail from "./mail/orderEmail.js";
 import sendPopup from "./mail/popup.js";
@@ -27,8 +26,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/product", productRouter);
-app.use("/api/invoice", invoiceRouter);
-app.use("/api/customer", customerRouter);
+app.use("/api/neworder", newOrderRouter);
 app.post("/api/sendemail", sendEmail);
 app.post("/api/sendpopup", sendPopup);
 
