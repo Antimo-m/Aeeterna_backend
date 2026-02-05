@@ -33,7 +33,7 @@ function bestSeller(req, res, next) {
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
-            image: `${baseUrl}/${product.image}`
+            image: `${baseUrl}/image/${product.image}`
         }));
 
         res.json(formattedResults);
@@ -69,7 +69,7 @@ function newArrivals(req, res, next) {
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
-            image: `${baseUrl}/${product.image}`
+            image: `${baseUrl}/image/${product.image}`
         }));
 
         res.json(formattedResults);
@@ -171,14 +171,17 @@ function showWithSlug(req, res, next) {
 
             connection.query(imagesQuery, [slug], (err, imagesResults) => {
                 if (err) return next(err);
-
+                const baseUrl = `${req.protocol}://${req.get("host")}`;  
                 //  risposta finale (UNA SOLA)
                 res.json({
                     ...product,
                     ingredients: ingredientsResults,
                     images: [
-                        { path: product.image },
-                        ...imagesResults
+                        { path: `${baseUrl}/images/${product.image}` },
+                         ...imagesResults.map(img => ({
+                            ...img,
+                            path: `${baseUrl}/images/${img.path}`
+                        }))
                     ]
                 })
             })
@@ -299,30 +302,26 @@ function index(req, res, next) {
         if (skinType !== undefined) {
             const parsedSkinType = Number(skinType);
 
-            // deve essere un numero intero
-            if (!Number.isInteger(parsedSkinType)) {
+           
+            if (!Number.isInteger(parsedSkinType) || parsedSkinType < 0) {
                 return res.status(400).json({
-                    error: "skinType deve essere un numero intero"
+                    error: "skinType deve essere un numero intero positivo o 0"
                 });
             }
 
-            // niente negativi o zero
-            if (parsedSkinType <= 0) {
-                return res.status(400).json({
-                    error: "skinType deve essere un numero positivo"
-                });
-            }
-
-            // limite massimo: 5 skin types
+            
             if (parsedSkinType > 5) {
                 return res.status(404).json({
-                    error: "Skin type non esistente"
+                    error: "Tipologia di pelle non esistente"
                 });
             }
 
-            // valido → aggiungo alla query
-            sql += " AND products.id_skin_type = ?";
-            values.push(parsedSkinType);
+            
+            if (parsedSkinType > 0) {
+                sql += " AND products.id_skin_type = ?";
+                values.push(parsedSkinType);
+            }
+            // parsedSkinType === 0 → NON fare nulla
         }
 
         runQuery();
