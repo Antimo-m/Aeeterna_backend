@@ -126,6 +126,9 @@ function showWithSlug(req, res, next) {
             ...publicProduct
         } = product;
 
+        console.log(publicProduct);
+        
+
 
         const ingredientsQuery = `
             SELECT ingredients.id, ingredients.name
