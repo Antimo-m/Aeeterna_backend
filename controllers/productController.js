@@ -2,7 +2,6 @@ import connection from "../db/createConnection.js"
 import pricefunction from "../middlewares/priceHelperfunction.js"
 
 function bestSeller(req, res, next) {
-
     const query = `
     SELECT 
       products.name,
@@ -11,7 +10,6 @@ function bestSeller(req, res, next) {
       products.image,
       products.size_ml,
       products.price,
-      COALESCE(SUM(product_invoice.quantity), 0) AS quantity,
       skin_types.name AS skin_type,
       categories.name AS category_name
     FROM products
@@ -22,18 +20,17 @@ function bestSeller(req, res, next) {
     INNER JOIN categories
       ON categories.id = products.id_category
     GROUP BY products.id
-    ORDER BY quantity DESC
     LIMIT 10
   `;
 
     connection.query(query, (err, results) => {
         if (err) return next(err);
 
-        const baseUrl = `${req.protocol}://${req.get("host")}`;
+        const baseUrl = `${req.protocol}://${req.get("host")}/image/`;
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
-            image: `${baseUrl}/image/${product.image}`//aggiungeto /image
+            image: `${baseUrl}${product.image}`
         }));
 
         res.json(formattedResults);
@@ -65,11 +62,12 @@ function newArrivals(req, res, next) {
     connection.query(query, (err, results) => {
         if (err) return next(err);
 
-        const baseUrl = `${req.protocol}://${req.get("host")}`;
+        const baseUrl = `${req.protocol}://${req.get("host")}/image/`;
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
-            image: `${baseUrl}/image/${product.image}`//aggiungeto /image
+    
+            image: `${baseUrl}${product.image}`
         }));
 
         res.json(formattedResults);
@@ -177,10 +175,10 @@ function showWithSlug(req, res, next) {
                     ...product,
                     ingredients: ingredientsResults,
                     images: [
-                        { path: `${baseUrl}/images/${product.image}` },
+                        { path: `${baseUrl}${product.image}` },
                          ...imagesResults.map(img => ({
                             ...img,
-                            path: `${baseUrl}/images/${img.path}`
+                            path: `${baseUrl}${img.path}`
                         }))
                     ]
                 })
