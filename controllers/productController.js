@@ -261,6 +261,8 @@ function index(req, res, next) {
             products.image,
             products.size_ml,
             products.price,
+            products.id_category,
+            products.id_skin_type,            
             categories.name AS category_name,
             skin_types.name AS skin_type
         FROM products
