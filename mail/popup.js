@@ -5,14 +5,25 @@ function sendPopup(req, res, next) {
 
     const { email } = req.body;
 
-    if (!email) {
-        return res.status(400).json({ error: "email mancante" });
+    if (!email || typeof email != "string" ) {
+        return res.status(400).json({ error: "Email mancante o non valida" });
+    }
+
+
+    const trim  = email.trim().toLowerCase()
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    if (!emailRegex.test(trim)){
+        return res.status(400).json({
+            error : "formato email non valido"
+        })
     }
 
     transporter.sendMail(
         {
             from: process.env.MAIL_USER,
-            to: email,
+            to: trim,
             subject: "Benvenuto in famiglia",
             text: `Grazie per essere entrato nella nostra newsletter`,
             html: `
@@ -21,13 +32,16 @@ function sendPopup(req, res, next) {
                     <h4>Resta connesso per scoprire tutte le novita</h4>
                 </body>
                 `
-        });
-
-        res.status(200).json({
-            message: "Registrazione effettuata con successo"
-        })
-
-
+        }, (err) => {
+            if (err) {
+                console.error("Errore invio email", err)
+                return next(err)
+            }
+            res.status(200).json({
+                message: "Registrazione effettuata con successo"
+            })
+        }
+    );
 }
 
 export default sendPopup;
