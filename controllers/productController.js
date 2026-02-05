@@ -345,7 +345,7 @@ function index(req, res, next) {
 
             const formattedResults = results.map(product => ({
                 ...pricefunction(product),
-                image: `${baseUrl}/${product.image}`
+                image: `${baseUrl}${product.image}`
             }));
 
             res.json(formattedResults);
