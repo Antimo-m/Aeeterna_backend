@@ -8,7 +8,7 @@ function sendEmail(req, res, next) {
     if (!invoiceId) {
         return res.status(400).json({ error: "invoiceId mancante" });
     }
-
+const baseUrl = `${req.protocol}://${req.get("host")}`;
     const info = transporter.sendMail(
         {
             from: process.env.MAIL_USER,
@@ -23,7 +23,8 @@ function sendEmail(req, res, next) {
                     .map(product => `
                             <div style="display: flex; justify-content: space-between; border: 1px solid gray; padding: 20px 10px;" >
                                 <span>${product.name}</span>
-                                <span>${product.price_at_purchase}€</span>
+                               <img src="${baseUrl}/image/${product.image}" alt="${product.description}"/>
+                                <span>${product.price}€</span>
                             </div>
                             `)
                     .join("")}
