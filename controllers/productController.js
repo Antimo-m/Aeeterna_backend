@@ -221,71 +221,36 @@ function index(req, res, next) {
         });
     }
 
-    let cleanSearch;
-
-    if (search !== undefined) {
-        if (typeof search !== "string") {
-            return res.status(400).json({
-                error: "search deve essere una stringa"
-            });
-        }
-
-        cleanSearch = search.trim();
-
-        if (cleanSearch.length < 2 && cleanSearch.length > 0) {
-            return res.status(400).json({
-                error: "search deve contenere almeno 2 caratteri"
-            });
-        }
-
-        if (/^\d+$/.test(cleanSearch)) {
-            return res.status(400).json({
-                error: "search non può contenere solo numeri"
-            });
-        }
-
-        if (cleanSearch.length > 80) {
-            return res.status(400).json({
-                error: "search troppo lunga"
-            });
-        }
-    }
-
-    
-
-
-    /* ===== QUERY BASE ===== */
     let sql = `
-        SELECT
-            products.name,
-            products.description,
-            products.slug,
-            products.image,
-            products.size_ml,
-            products.price,
-            categories.name AS category_name,
-            skin_types.name AS skin_type
-        FROM products
-        INNER JOIN categories 
-            ON categories.id = products.id_category
-        INNER JOIN skin_types 
-            ON skin_types.id = products.id_skin_type
-        WHERE products.price BETWEEN ? AND ?
+    SELECT 
+      products.name,
+      products.description,
+      products.slug,
+      products.image,
+      products.size_ml,
+      products.price,
+      skin_types.name AS skin_type,
+      categories.name AS category_name
+    FROM products
+    INNER JOIN skin_types
+      ON skin_types.id = products.id_skin_type
+    INNER JOIN categories   
+      ON categories.id = products.id_category
+    WHERE products.price BETWEEN ? AND ?
     `;
 
     const values = [minPrice, maxPrice];
 
-    /* ===== SEARCH (nome + description prodotto) ===== */
-    if (cleanSearch && cleanSearch.length > 0) {
+    /* ===== SEARCH ===== */
+    if (search !== undefined && search !== "") {
+        // Se la search è una stringa non vuota, aggiungiamo il filtro LIKE
         sql += " AND (products.name LIKE ? OR products.description LIKE ?)";
-        values.push(`%${cleanSearch}%`, `%${cleanSearch}%`);
+        values.push(`%${search}%`, `%${search}%`);
     }
 
     /* ===== CATEGORY ===== */
-    
     if (category !== undefined) {
         const parsedCategory = Number(category);
-
         if (!Number.isInteger(parsedCategory) || parsedCategory < 0) {
             return res.status(400).json({
                 error: "category deve essere un numero intero >= 0"
@@ -299,11 +264,9 @@ function index(req, res, next) {
         }
     }
 
-
     /* ===== SKIN TYPE ===== */
     if (skinType !== undefined) {
         const parsedSkinType = Number(skinType);
-
         if (!Number.isInteger(parsedSkinType) || parsedSkinType < 0) {
             return res.status(400).json({
                 error: "skinType deve essere un numero intero positivo o 0"
@@ -329,14 +292,64 @@ function index(req, res, next) {
     connection.query(sql, values, (err, results) => {
         if (err) return next(err);
 
-        const baseUrl = `${req.protocol}://${req.get("host")}`;
+        // Calcoliamo il numero totale di prodotti per paginazione
+        const countSql = `
+        SELECT COUNT(*) AS total
+        FROM products
+        INNER JOIN skin_types
+          ON skin_types.id = products.id_skin_type
+        INNER JOIN categories
+          ON categories.id = products.id_category
+        WHERE products.price BETWEEN ? AND ?
+        `;
+        const countValues = [minPrice, maxPrice];
+
+        if (search && search !== "") {
+            countSql += " AND (products.name LIKE ? OR products.description LIKE ?)";
+            countValues.push(`%${search}%`, `%${search}%`);
+        }
+
+        // Filtro per category
+        if (category > 0) {
+            countSql += " AND products.id_category = ?";
+            countValues.push(category);
+        }
+
+        // Filtro per skinType
+        if (skinType > 0) {
+            countSql += " AND products.id_skin_type = ?";
+            countValues.push(skinType);
+        }
+
+        connection.query(countSql, countValues, (err, countResult) => {
+            if (err) return next(err);
+
+            const totalProducts = countResult[0].total;
+            const totalPages = Math.ceil(totalProducts / limit);
+            const currentPage = Math.floor(offset / limit) + 1;
+
+            // Se non ci sono risultati per la ricerca
+            if (results.length === 0 && search && search !== "") {
+                return res.status(404).json({
+                    error: "Prodotto non trovato"
+                });
+            }
+
+            // Prepara i risultati (con il prezzo come numero e senza id)
+            const baseUrl = `${req.protocol}://${req.get("host")}/image/`;
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
             image: `${baseUrl}/image/${product.image}`
         }));
 
-        res.json(formattedResults);
+            res.json({
+                currentPage,
+                totalPages,
+                totalProducts,
+                products: formattedResults
+            });
+        });
     });
 }
 
