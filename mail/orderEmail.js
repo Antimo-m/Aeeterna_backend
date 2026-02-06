@@ -17,16 +17,43 @@ const baseUrl = `${req.protocol}://${req.get("host")}`;
             text: `Il tuo ordine #${invoiceId} è stato ricevuto con successo`,
             html: `
                 <body>
-                    <h3>Il tuo ordine #${invoiceId} è stato ricevuto con successo</h3>
-                    <section style="padding: 30px; display: flex; flex-direction: column;">
+                   <h3 style="margin: 0 0 20px 0; font-family: Arial, sans-serif; font-size: 24px; color: #1a1a1a; text-align: center; line-height: 1.3;">
+                    Il tuo ordine 
+                    <span style="color: #BFA059; font-weight: 800;">#${invoiceId}</span> 
+                    <br>è stato ricevuto con successo
+                    </h3>
+                    <section style="padding: 20px; border: 1px solid #f0f0f0; border-radius: 8px; background-color: #ffffff;">
                         ${products
-                    .map(product => `
-                            <div style="display: flex; justify-content: space-between; border: 1px solid gray; padding: 20px 10px;" >
-                                <span>${product.name}</span>
-                               <img src="${baseUrl}/image/${product.image}" alt="${product.description}"/>
-                                <span>${product.price}€</span>
-                            </div>
-                            `)
+                    .map(product => {
+                        const imageUrl = `${baseUrl}/image/${product.image}`;
+                        console.log("Tentativo di caricamento immagine da:", imageUrl);
+                        return`
+                    <table role="presentation" width="100%" style="border-collapse: collapse; border-bottom: 1px solid #eeeeee; margin-bottom: 15px;">
+                         <tr>
+                            <td style="padding: 10px 0; width: 80px; vertical-align: middle;">
+                            <img src="${imageUrl}" 
+                                 alt="${product.name}" 
+                                 width="70" 
+                                 style="display: block; border-radius: 8px; border: 1px solid #f0f0f0; object-fit: cover;" />
+                            </td>
+        
+                            <td style="padding: 10px 15px; vertical-align: middle;">
+                            <p style="margin: 0; font-family: Arial, sans-serif; font-size: 16px; color: #333333; font-weight: bold;">
+                              ${product.name}
+                            </p>
+                            <p style="margin: 5px 0 0 0; font-family: Arial, sans-serif; font-size: 14px; color: #888888;">
+                              Quantità: ${product.quantity}
+                            </p>
+        </td>
+        
+        <td style="padding: 10px 0; text-align: right; vertical-align: middle;">
+            <span style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; color: #2c3e50;">
+                ${product.price_at_purchase}€
+            </span>
+        </td>
+    </tr>
+</table>
+                            `})
                     .join("")}
                     </section>
                 </body>

@@ -75,14 +75,15 @@ function storeNewOrder(req, res, next) {
 
                             const sqlProducts = `
                             SELECT
-                            products.name,
+                            products.name AS name,
+                            products.image AS image,
                             product_invoice.quantity,
                             product_invoice.price_at_purchase 
                             FROM product_invoice
                             JOIN products
                             ON  products.id = product_invoice.id_product
                             WHERE product_invoice.id_invoice = ?
-                            `
+                            ` //forse qui bisogna aggiungere campi immagine prodotto e prezzo prodotto
 
                             connection.query(sqlProducts,[newInvoiceId], (err, invoice) => {
                                 if (err) return next(err)
