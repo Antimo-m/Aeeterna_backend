@@ -163,10 +163,8 @@ function showWithSlug(req, res, next) {
                     ingredients: ingredientsResults,
                     images: [
                         { path: `${baseUrl}${product.image}` },
-                        { path: `${baseUrl}${product.image}` },
                          ...imagesResults.map(img => ({
                             ...img,
-                            path: `${baseUrl}${img.path}`
                             path: `${baseUrl}${img.path}`
                         }))
                     ]
