@@ -2,7 +2,6 @@ import connection from "../db/createConnection.js"
 import pricefunction from "../middlewares/priceHelperfunction.js"
 
 function bestSeller(req, res, next) {
-
     const query = `
     SELECT 
       products.name,
@@ -11,7 +10,6 @@ function bestSeller(req, res, next) {
       products.image,
       products.size_ml,
       products.price,
-      COALESCE(SUM(product_invoice.quantity), 0) AS quantity,
       skin_types.name AS skin_type,
       categories.name AS category_name
     FROM products
@@ -22,14 +20,13 @@ function bestSeller(req, res, next) {
     INNER JOIN categories
       ON categories.id = products.id_category
     GROUP BY products.id
-    ORDER BY quantity DESC
     LIMIT 10
   `;
 
     connection.query(query, (err, results) => {
         if (err) return next(err);
 
-        const baseUrl = `${req.protocol}://${req.get("host")}`;
+        const baseUrl = `${req.protocol}://${req.get("host")}/image/`;
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
@@ -66,7 +63,7 @@ function newArrivals(req, res, next) {
     connection.query(query, (err, results) => {
         if (err) return next(err);
 
-        const baseUrl = `${req.protocol}://${req.get("host")}`;
+        const baseUrl = `${req.protocol}://${req.get("host")}/image/`;
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
@@ -121,33 +118,18 @@ function showWithSlug(req, res, next) {
         }
         const product = results[0];
 
-        /* const sql = `SELECT  ingredients.id, ingredients.name FROM products INNER JOIN product_ingredient
-        ON products.id = product_ingredient.id_product INNER JOIN ingredients ON 
-        product_ingredient.id_ingredient = ingredients.id
-        WHERE products.slug = ?`
+        const {
+            id,
+            created_at,
+            updated_at,
+            
+            ...publicProduct
+        } = product;
 
-        connection.query(sql, [slug], (err, resultsIngredients) => {
-            if (err) return next(err);
+        console.log(publicProduct);
+        
 
-            let finalProduct = {
-                ...product,
-                ingredients: resultsIngredients
-            }
-        const sqlImage= `SELECT images.* FROM products INNER JOIN images ON products.id = images.id_product WHERE products.slug = ?`
 
-        connection.query(sqlImage, [slug], (err, resultsImage) => {
-            if (err) return next(err);
-
-             finalProduct = {
-                ...finalProduct,
-                image: [
-                    {path:finalProduct.image},
-                    ...resultsImage
-                ]
-            }
-            res.json(finalProduct);
-        } )
-             */
         const ingredientsQuery = `
             SELECT ingredients.id, ingredients.name
             FROM products
@@ -172,15 +154,19 @@ function showWithSlug(req, res, next) {
 
             connection.query(imagesQuery, [slug], (err, imagesResults) => {
                 if (err) return next(err);
-                const baseUrl = `${req.protocol}://${req.get("host")}`;  
-                //  risposta finale (UNA SOLA)
+                const baseUrl = `${req.protocol}://${req.get("host")}/image/`;  
+                //  risposta finale 
                 res.json({
-                    ...product,
+                    ...publicProduct,
+                    image :`${baseUrl}${product.image}`,
+                    price : Number(product.price),
                     ingredients: ingredientsResults,
                     images: [
                         { path: `${baseUrl}${product.image}` },
+                        { path: `${baseUrl}${product.image}` },
                          ...imagesResults.map(img => ({
                             ...img,
+                            path: `${baseUrl}${img.path}`
                             path: `${baseUrl}${img.path}`
                         }))
                     ]
@@ -194,10 +180,11 @@ function showWithSlug(req, res, next) {
 function index(req, res, next) {
     let {
         category,
+        search,
         skinType,
         minPrice = 0,
         maxPrice = 9999,
-        limit = 10,
+        limit = 80,
         offset = 0
     } = req.query;
 
@@ -236,125 +223,126 @@ function index(req, res, next) {
         });
     }
 
-    
- let sql = ` SELECT
-    products.name,
-        products.description,
-        products.slug,
-        products.image,
-        products.size_ml,
-        products.price,
-        categories.name AS category_name,
-            skin_types.name AS skin_type
-    FROM products
-    INNER JOIN categories 
-        ON categories.id = products.id_category
-    INNER JOIN skin_types 
-        ON skin_types.id = products.id_skin_type
-    WHERE products.price BETWEEN ? AND ?
-`;
+   
+    let cleanSearch;
 
-  
-
-    const values = [minPrice, maxPrice];
-
-    /* ===== CATEGORY ===== */
-    if (category !== undefined) {
-        const parsedCategory = Number(category);
-
-        if (!Number.isInteger(parsedCategory) || parsedCategory <= 0) {
+    if (search !== undefined) {
+        if (typeof search !== "string") {
             return res.status(400).json({
-                error: "category deve essere un numero intero positivo"
+                error: "search deve essere una stringa"
             });
         }
 
-        const checkCategorySql = `
-      SELECT id
-      FROM categories
-      WHERE id = ?
-      LIMIT 1
-    `;
+        cleanSearch = search.trim();
 
-         connection.query(
-            checkCategorySql,
-            [parsedCategory],
-            (err, results) => {
-                if (err) return next(err);
-
-                if (results.length === 0) {
-                    return res.status(404).json({
-                        error: "Categoria non esistente"
-                    });
-                }
-
-                sql += " AND products.id_category = ?";
-                values.push(parsedCategory);
-
-                handleSkinTypeAndRun();
-            }
-        );
-        return
-    }
-
-    handleSkinTypeAndRun();
-
-    /* ===== SKIN TYPE + QUERY FINALE ===== */
-    function handleSkinTypeAndRun() {
-        if (skinType !== undefined) {
-            const parsedSkinType = Number(skinType);
-
-           
-            if (!Number.isInteger(parsedSkinType) || parsedSkinType < 0) {
-                return res.status(400).json({
-                    error: "skinType deve essere un numero intero positivo o 0"
-                });
-            }
-
-            
-            if (parsedSkinType > 5) {
-                return res.status(404).json({
-                    error: "Tipologia di pelle non esistente"
-                });
-            }
-
-            
-            if (parsedSkinType > 0) {
-                sql += " AND products.id_skin_type = ?";
-                values.push(parsedSkinType);
-            }
-            // parsedSkinType === 0 → NON fare nulla
+        if (cleanSearch.length < 2) {
+            return res.status(400).json({
+                error: "search deve contenere almeno 2 caratteri"
+            });
         }
 
-        runQuery();
+        if (/^\d+$/.test(cleanSearch)) {
+            return res.status(400).json({
+                error: "search non può contenere solo numeri"
+            });
+        }
+
+        if (cleanSearch.length > 50) {
+            return res.status(400).json({
+                error: "search troppo lunga"
+            });
+        }
     }
 
 
-    function runQuery() {
-        sql += " LIMIT ? OFFSET ?";
-        values.push(limit, offset);
+    /* ===== QUERY BASE ===== */
+    let sql = `
+        SELECT
+            products.name,
+            products.description,
+            products.slug,
+            products.image,
+            products.size_ml,
+            products.price,
+            categories.name AS category_name,
+            skin_types.name AS skin_type
+        FROM products
+        INNER JOIN categories 
+            ON categories.id = products.id_category
+        INNER JOIN skin_types 
+            ON skin_types.id = products.id_skin_type
+        WHERE products.price BETWEEN ? AND ?
+    `;
 
-        connection.query(sql, values, (err, results) => {
-            if (err) return next(err);
+    const values = [minPrice, maxPrice];
 
-            
-            if (results.length === 0) {
-                return res.status(404).json({
-                    error: "Prodotto non disponibile",
-                    message: "Non ci sono prodotti disponibili per questo tipo di pelle in questa categoria"
-                });
-            }
-
-            const baseUrl = `${req.protocol}://${req.get("host")}`;
-
-            const formattedResults = results.map(product => ({
-                ...pricefunction(product),
-                image: `${baseUrl}/${product.image}`
-            }));
-
-            res.json(formattedResults);
-        });
+    /* ===== SEARCH (nome + description prodotto) ===== */
+    if (search !== undefined) {
+        sql += " AND (products.name LIKE ? OR products.description LIKE ?)";
+        values.push(`%${search.trim()}%`, `%${search.trim()}%`);
     }
+
+    /* ===== CATEGORY ===== */
+    
+    if (category !== undefined) {
+        const parsedCategory = Number(category);
+
+        if (!Number.isInteger(parsedCategory) || parsedCategory < 0) {
+            return res.status(400).json({
+                error: "category deve essere un numero intero >= 0"
+            });
+        }
+
+        // category = 0 → tutte le categorie (NON filtrare)
+        if (parsedCategory > 0) {
+            sql += " AND products.id_category = ?";
+            values.push(parsedCategory);
+        }
+    }
+
+
+    /* ===== SKIN TYPE ===== */
+    if (skinType !== undefined) {
+        const parsedSkinType = Number(skinType);
+
+        if (!Number.isInteger(parsedSkinType) || parsedSkinType < 0) {
+            return res.status(400).json({
+                error: "skinType deve essere un numero intero positivo o 0"
+            });
+        }
+
+        if (parsedSkinType > 5) {
+            return res.status(404).json({
+                error: "Tipologia di pelle non esistente"
+            });
+        }
+
+        if (parsedSkinType > 0) {
+            sql += " AND products.id_skin_type = ?";
+            values.push(parsedSkinType);
+        }
+    }
+
+    /* ===== PAGINAZIONE ===== */
+    sql += " LIMIT ? OFFSET ?";
+    values.push(limit, offset);
+
+    connection.query(sql, values, (err, results) => {
+        if (err) return next(err);
+
+        const baseUrl = `${req.protocol}://${req.get("host")}`;
+
+        const formattedResults = results.map(product => ({
+            ...pricefunction(product),
+            image: `${baseUrl}/image/${product.image}`
+        }));
+
+        res.json(formattedResults);
+    });
 }
+
+    
+
 
 
 
