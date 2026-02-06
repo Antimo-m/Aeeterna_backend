@@ -209,9 +209,9 @@ function index(req, res, next) {
         });
     }
 
-    if (Number.isNaN(limit) || !Number.isInteger(limit) || limit <= 0 || limit > 80) {
+    if (Number.isNaN(limit) || !Number.isInteger(limit) || limit <= 4 || limit > 80) {
         return res.status(400).json({
-            error: "limit deve essere un numero intero tra 1 e 80"
+            error: "limit deve essere un numero intero tra 5 e 80"
         });
     }
 
@@ -236,7 +236,7 @@ function index(req, res, next) {
             return res.status(400).json({
                 error: "search deve contenere almeno 2 caratteri"
             });
-        }
+        } 
 
         if (/^\d+$/.test(cleanSearch)) {
             return res.status(400).json({
