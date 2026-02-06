@@ -30,6 +30,7 @@ function bestSeller(req, res, next) {
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
+            quantity : Number(product.quantity),
             image: `${baseUrl}${product.image}`
         }));
 
@@ -66,8 +67,7 @@ function newArrivals(req, res, next) {
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
-            image: `${baseUrl}${product.image}`,
-            price: Number(product.price)
+            image: `${baseUrl}${product.image}`//aggiungeto /image
         }));
 
         res.json(formattedResults);
@@ -120,13 +120,14 @@ function showWithSlug(req, res, next) {
 
         const {
             id,
-            id_category,
-            id_skin_type,
             created_at,
             updated_at,
             
             ...publicProduct
         } = product;
+
+        console.log(publicProduct);
+        
 
 
         const ingredientsQuery = `
@@ -332,7 +333,7 @@ function index(req, res, next) {
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
-            image: `${baseUrl}${product.image}`
+            image: `${baseUrl}/image/${product.image}`
         }));
 
         res.json(formattedResults);

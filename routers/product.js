@@ -11,12 +11,15 @@ router.get("/bestseller", controller.bestSeller);
 
 // INDEX NEW ARRIVALS
 router.get("/newarrivals", controller.newArrivals);
+// SHOW CON SLUG
+router.get("/:slug",controller.showWithSlug)
 
 // INDEX PRODUCT
 router.get("/", controller.index);
 
-// SHOW CON SLUG
-router.get("/:slug",controller.showWithSlug)
+
+
+
 
 
 
