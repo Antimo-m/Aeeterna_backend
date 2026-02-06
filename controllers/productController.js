@@ -220,7 +220,6 @@ function index(req, res, next) {
         });
     }
 
-   
     let cleanSearch;
 
     if (search !== undefined) {
@@ -232,7 +231,7 @@ function index(req, res, next) {
 
         cleanSearch = search.trim();
 
-        if (cleanSearch.length < 2) {
+        if (cleanSearch.length < 2 && cleanSearch.length > 0) {
             return res.status(400).json({
                 error: "search deve contenere almeno 2 caratteri"
             });
@@ -244,12 +243,14 @@ function index(req, res, next) {
             });
         }
 
-        if (cleanSearch.length > 50) {
+        if (cleanSearch.length > 80) {
             return res.status(400).json({
                 error: "search troppo lunga"
             });
         }
     }
+
+    
 
 
     /* ===== QUERY BASE ===== */
@@ -274,9 +275,9 @@ function index(req, res, next) {
     const values = [minPrice, maxPrice];
 
     /* ===== SEARCH (nome + description prodotto) ===== */
-    if (search !== undefined) {
+    if (cleanSearch && cleanSearch.length > 0) {
         sql += " AND (products.name LIKE ? OR products.description LIKE ?)";
-        values.push(`%${search.trim()}%`, `%${search.trim()}%`);
+        values.push(`%${cleanSearch}%`, `%${cleanSearch}%`);
     }
 
     /* ===== CATEGORY ===== */
