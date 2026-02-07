@@ -327,6 +327,7 @@ function index(req, res, next) {
     values.push(limit, offset);
 
     connection.query(sql, values, (err, results) => {
+        
         if (err) return next(err);
 
         const baseUrl = `${req.protocol}://${req.get("host")}`;
@@ -335,8 +336,22 @@ function index(req, res, next) {
             ...pricefunction(product),
             image: `${baseUrl}/image/${product.image}`
         }));
+        const totalSql = 
+        ` select count(products.id) as total
+          ${sql.substring(285, sql.length - 16)}
+        `
+        connection.query(totalSql, values, (err, totalResult) => {
+            if (err) return next(err);
 
-        res.json(formattedResults);
+            const finalObject = {
+                totalProduct: totalResult[0].total,
+                productForPage: limit,
+                totalPage: Math.ceil(totalResult[0].total / limit),
+                products: formattedResults
+            }
+
+            res.json(finalObject);
+        })
     });
 }
 
