@@ -346,7 +346,7 @@ function index(req, res, next) {
             const finalObject = {
                 totalProduct: totalResult[0].total,
                 productForPage: limit,
-                totalPage: Math.trunc(totalResult[0].total / limit),
+                totalPage: Math.ceil(totalResult[0].total / limit),
                 products: formattedResults
             }
 
