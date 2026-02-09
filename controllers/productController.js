@@ -30,7 +30,7 @@ function bestSeller(req, res, next) {
 
         const formattedResults = results.map(product => ({
             ...pricefunction(product),
-            quantity : Number(product.quantity),
+            quantity: Number(product.quantity),
             image: `${baseUrl}${product.image}`
         }));
 
@@ -122,12 +122,12 @@ function showWithSlug(req, res, next) {
             id,
             created_at,
             updated_at,
-            
+
             ...publicProduct
         } = product;
 
         console.log(publicProduct);
-        
+
 
 
         const ingredientsQuery = `
@@ -154,16 +154,16 @@ function showWithSlug(req, res, next) {
 
             connection.query(imagesQuery, [slug], (err, imagesResults) => {
                 if (err) return next(err);
-                const baseUrl = `${req.protocol}://${req.get("host")}/image/`;  
+                const baseUrl = `${req.protocol}://${req.get("host")}/image/`;
                 //  risposta finale 
                 res.json({
                     ...publicProduct,
-                    image :`${baseUrl}${product.image}`,
-                    price : Number(product.price),
+                    image: `${baseUrl}${product.image}`,
+                    price: Number(product.price),
                     ingredients: ingredientsResults,
                     images: [
                         { path: `${baseUrl}${product.image}` },
-                         ...imagesResults.map(img => ({
+                        ...imagesResults.map(img => ({
                             ...img,
                             path: `${baseUrl}${img.path}`
                         }))
@@ -183,9 +183,13 @@ function index(req, res, next) {
         minPrice = 0,
         maxPrice = 9999,
         limit = 80,
-        offset = 0
+        offset = 0,
+        order
     } = req.query;
 
+    
+
+    order = order ? String(order) : "a-z"
     minPrice = Number(minPrice);
     maxPrice = Number(maxPrice);
     limit = parseInt(limit);
@@ -223,6 +227,15 @@ function index(req, res, next) {
 
     let cleanSearch;
 
+    if (typeof order !== "string") {
+        return res.status(400).json({
+            error: "order deve essere una stringa"
+        });
+    }
+    if (order !== "a-z" && order !== "prezzoMin" && order !== "prezzoMax") {
+        order = "a-z"
+    }
+
     if (search !== undefined) {
         if (typeof search !== "string") {
             return res.status(400).json({
@@ -236,7 +249,7 @@ function index(req, res, next) {
             return res.status(400).json({
                 error: "search deve contenere almeno 2 caratteri"
             });
-        } 
+        }
 
         if (/^\d+$/.test(cleanSearch)) {
             return res.status(400).json({
@@ -251,7 +264,7 @@ function index(req, res, next) {
         }
     }
 
-    
+
 
 
     /* ===== QUERY BASE ===== */
@@ -282,7 +295,7 @@ function index(req, res, next) {
     }
 
     /* ===== CATEGORY ===== */
-    
+
     if (category !== undefined) {
         const parsedCategory = Number(category);
 
@@ -322,12 +335,32 @@ function index(req, res, next) {
         }
     }
 
+    const totalSql =
+        ` select count(products.id) as total
+          ${sql.substring(285, sql.length)}
+        `
+    console.log(order);
+
+    if (order === "a-z") {
+        sql += " ORDER BY products.name"
+    }
+    if (order === "prezzoMin") {
+        sql += " ORDER BY products.price"
+    }
+    if (order === "prezzoMax") {
+        sql += " ORDER BY products.price DESC"
+    }
+
     /* ===== PAGINAZIONE ===== */
     sql += " LIMIT ? OFFSET ?";
+
     values.push(limit, offset);
 
+
     connection.query(sql, values, (err, results) => {
-        
+        console.log(sql);
+
+
         if (err) return next(err);
 
         const baseUrl = `${req.protocol}://${req.get("host")}`;
@@ -336,17 +369,14 @@ function index(req, res, next) {
             ...pricefunction(product),
             image: `${baseUrl}/image/${product.image}`
         }));
-        const totalSql = 
-        ` select count(products.id) as total
-          ${sql.substring(285, sql.length - 16)}
-        `
+
         connection.query(totalSql, values, (err, totalResult) => {
             if (err) return next(err);
 
             const finalObject = {
                 totalProduct: totalResult[0].total,
                 productForPage: limit,
-                totalPage: Math.trunc(totalResult[0].total / limit),
+                totalPage: Math.ceil(totalResult[0].total / limit),
                 products: formattedResults
             }
 
@@ -355,12 +385,13 @@ function index(req, res, next) {
     });
 }
 
-    
 
 
 
 
-export default {index,
+
+export default {
+    index,
     bestSeller,
     showWithSlug,
     newArrivals
