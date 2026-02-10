@@ -183,17 +183,22 @@ function index(req, res, next) {
         minPrice = 0,
         maxPrice = 9999,
         limit = 80,
-        offset = 0,
+        page = 1,
         order
     } = req.query;
 
-    
 
     order = order ? String(order) : "a-z"
     minPrice = Number(minPrice);
     maxPrice = Number(maxPrice);
     limit = parseInt(limit);
-    offset = parseInt(offset);
+    page = parseInt(page);
+
+    if(page < 1 || page > 16){
+         return res.status(400).json({
+            error: "Inserisci un numero di pagina valido"
+        });
+    }
 
     if (Number.isNaN(minPrice) || Number.isNaN(maxPrice)) {
         return res.status(400).json({
@@ -216,12 +221,6 @@ function index(req, res, next) {
     if (Number.isNaN(limit) || !Number.isInteger(limit) || limit <= 4 || limit > 80) {
         return res.status(400).json({
             error: "limit deve essere un numero intero tra 5 e 80"
-        });
-    }
-
-    if (Number.isNaN(offset) || !Number.isInteger(offset) || offset < 0) {
-        return res.status(400).json({
-            error: "offset deve essere un numero intero >= 0"
         });
     }
 
@@ -264,8 +263,7 @@ function index(req, res, next) {
         }
     }
 
-
-
+    const offset = limit * (page - 1);
 
     /* ===== QUERY BASE ===== */
     let sql = `
@@ -353,6 +351,9 @@ function index(req, res, next) {
 
     /* ===== PAGINAZIONE ===== */
     sql += " LIMIT ? OFFSET ?";
+
+    console.log(offset);
+    
 
     values.push(limit, offset);
 
