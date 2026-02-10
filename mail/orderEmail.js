@@ -32,7 +32,7 @@ const baseUrl = `${req.protocol}://${req.get("host")}`;
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f7f9f7; padding: 20px;">
             <tr>
                 <td align="center">
-                    <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 16px; border: 1px solid ${brandColor}; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                    <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color: #ffffff"; border-radius: 16px; border: 1px solid #9fad96; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
                         <tr>
                             <td style="background-color:"#9fad96"; padding: 30px; text-align: center;">
                                 <h1 style="margin: 0; color: #ffffff; font-size: 24px; letter-spacing: 1px;">AETERNA BEAUTY</h1>
@@ -64,7 +64,7 @@ const baseUrl = `${req.protocol}://${req.get("host")}`;
                                         </tr>
                                         <tr>
                                             <td style="padding-top:10px; font-size: 16px; font-weight: bold;">Totale</td>
-                                            <td align="right" style="padding-top:10px; font-size: 18px; font-weight: bold; color: ${brandColor};">${total_price}€</td>
+                                            <td align="right" style="padding-top:10px; font-size: 18px; font-weight: bold; color: #9fad96;">${total_price}€</td>
                                         </tr>
                                     </table>
                                 </div>
@@ -73,7 +73,7 @@ const baseUrl = `${req.protocol}://${req.get("host")}`;
                                     <tr>
                                         <td align="center" style="font-size: 13px; color: #777; line-height: 1.5;">
                                             Se ti serve aiuto o maggiori informazioni contattaci:<br>
-                                            <a href="mailto:assistenza@aeteralbeauty.it" style="color: ${brandColor}; text-decoration: none;">assistenza@aeteralbeauty.it</a> | <strong>4363263443265</strong>
+                                            <a href="mailto:assistenza@aeteralbeauty.it" style="color: #9fad96; text-decoration: none;">assistenza@aeteralbeauty.it</a> | <strong>4363263443265</strong>
                                         </td>
                                     </tr>
                                 </table>
@@ -82,8 +82,8 @@ const baseUrl = `${req.protocol}://${req.get("host")}`;
                         <tr>
                             <td style="background-color: #f9f9f9; padding: 30px; text-align: center;">
                                 <p style="margin: 0 0 15px 0; font-size: 14px; font-weight: bold; color: #333;">Seguici sui Social</p>
-                                <a href="#" style="margin: 0 10px; text-decoration: none; color: ${brandColor};">Instagram</a>
-                                <a href="#" style="margin: 0 10px; text-decoration: none; color: ${brandColor};">Facebook</a>
+                                <a href="#" style="margin: 0 10px; text-decoration: none; color: #9fad96;">Instagram</a>
+                                <a href="#" style="margin: 0 10px; text-decoration: none; color: #9fad96;">Facebook</a>
                                 <p style="margin-top: 20px; font-size: 11px; color: #bbb;">© 2026 Aeterna Beauty - Forrest Gap - Tutti i diritti riservati</p>
                             </td>
                         </tr>
@@ -101,7 +101,7 @@ const baseUrl = `${req.protocol}://${req.get("host")}`;
             transporter.sendMail(
                 {
                     from: process.env.MAIL_USER,
-                    to: "kigek96440@helesco.com",
+                    to: "l.summa94@gmail.com",
                     subject: "Nuovo ordine ricevuto",
                     text: `Nuovo ordine creato da ${name} ${surname}. ID: ${invoiceId}`,
                     html:`
