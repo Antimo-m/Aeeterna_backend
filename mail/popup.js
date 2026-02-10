@@ -6,7 +6,7 @@ function sendPopup(req, res, next) {
     const { email } = req.body;
 
     if (!email || typeof email != "string" ) {
-        return res.status(400).json({ error: "Email mancante o non valida" });
+        return res.status(400).json({ message: "Email mancante o non valida" });
     }
 
 
@@ -16,7 +16,7 @@ function sendPopup(req, res, next) {
 
     if (!emailRegex.test(trim)){
         return res.status(400).json({
-            error : "formato email non valido"
+            message : "formato email non valido"
         })
     }
 
@@ -35,7 +35,7 @@ function sendPopup(req, res, next) {
         }, (err) => {
             if (err) {
                 console.error("Errore invio email", err)
-                return next(err)
+                return res.status(500).json({ message: "Errore invio email, riprova più tardi" })
             }
             res.status(200).json({
                 message: "Registrazione effettuata con successo"
