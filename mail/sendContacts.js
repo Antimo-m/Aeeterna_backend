@@ -29,7 +29,7 @@ function sendContacts(req, res, next) {
     const info = transporter.sendMail(
         {
             from: process.env.MAIL_USER,
-            to: email,
+            to: "stivenmastrovito6@gmail.com",
             subject: `Richiesta supporto`,
             text: `${name} ${surname}, ha avviato una chat di supporto.`,
             html: `
