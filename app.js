@@ -7,6 +7,7 @@ import newOrderRouter from "./routers/newOrder.js";
 import notFound from "./middlewares/notFound.js";
 import sendEmail from "./mail/orderEmail.js";
 import sendPopup from "./mail/popup.js";
+import sendContacts from "./mail/sendContacts.js";
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 app.use("/api/product", productRouter);
 app.use("/api/neworder", newOrderRouter);
 app.post("/api/sendemail", sendEmail);
+app.post("/api/sendcontacts", sendContacts);
 app.post("/api/sendpopup", sendPopup);
 
 app.use(errorHandler); //import global middlerware errorHandler
