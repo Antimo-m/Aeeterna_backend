@@ -4,10 +4,32 @@ function sendContacts(req, res, next) {
     console.log("Invio email....");
     const { name, surname, description, email } = req.body
 
+    if (name.length < 2 || surname.length < 2) {
+        res.status(400).json({
+            type: "error",
+            message: "Nome e cognome devono contenere almeno 2 caratteri"
+        })
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+        res.status(400).json({
+            type: "error",
+            message: "Email inserita non valida"
+        })
+    }
+
+    if (description.length < 10) {
+        res.status(400).json({
+            type: "error",
+            message: "Descrizione inserita non valida"
+        })
+    }
+
     const info = transporter.sendMail(
         {
             from: process.env.MAIL_USER,
-            to: "stivenmastrovito6@gmail.com",
+            to: email,
             subject: `Richiesta supporto`,
             text: `${name} ${surname}, ha avviato una chat di supporto.`,
             html: `
