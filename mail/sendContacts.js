@@ -1,0 +1,111 @@
+import transporter from "./trasporter.js";
+
+function sendContacts(req, res, next) {
+    console.log("Invio email....");
+    const { name, surname, description, email } = req.body
+
+    const info = transporter.sendMail(
+        {
+            from: process.env.MAIL_USER,
+            to: "stivenmastrovito6@gmail.com",
+            subject: `Richiesta supporto`,
+            text: `${name} ${surname}, ha avviato una chat di supporto.`,
+            html: `
+    <!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+
+<body style="margin:0; padding:0; background-color:#f6f8f6; font-family:Helvetica, Arial, sans-serif;">
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:20px; background-color:#f6f8f6;">
+<tr>
+<td align="center">
+
+<table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color:#ffffff; border-radius:16px; border:1px solid #e6e6e6; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+
+    <!-- HEADER -->
+    <tr>
+        <td style="background-color:#9fad96; padding:30px; text-align:center;">
+            <h1 style="margin:0; color:#ffffff; font-size:24px; letter-spacing:1px;">
+                AETERNA BEAUTY
+            </h1>
+            <p style="margin:10px 0 0 0; color:#ffffff; font-size:15px; opacity:0.9;">
+                Nuova richiesta di contatto
+            </p>
+        </td>
+    </tr>
+
+    <!-- BODY -->
+    <tr>
+        <td style="padding:40px 30px;">
+
+            <h2 style="margin:0 0 25px 0; color:#333; font-size:20px;">
+                Dettagli del cliente
+            </h2>
+
+            <!-- INFO BOX -->
+            <table width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:30px;">
+                <tr>
+                    <td style="padding:15px; background-color:#fafafa; border-left:4px solid #d4b46a; border-radius:8px;">
+
+                        <p style="margin:0 0 10px 0; font-size:14px; color:#555;">
+                            <strong style="color:#9fad96;">Nome:</strong> ${name}
+                        </p>
+
+                        <p style="margin:0 0 10px 0; font-size:14px; color:#555;">
+                            <strong style="color:#9fad96;">Cognome:</strong> ${surname}
+                        </p>
+
+                        <p style="margin:0; font-size:14px; color:#555;">
+                            <strong style="color:#9fad96;">Email:</strong> ${email}
+                        </p>
+
+                    </td>
+                </tr>
+            </table>
+
+            <!-- MESSAGGIO -->
+            <h3 style="margin:0 0 15px 0; font-size:16px; color:#d4b46a; text-transform:uppercase; letter-spacing:1px;">
+                Descrizione del problema
+            </h3>
+
+            <div style="background-color:#f9f9f9; padding:20px; border-radius:12px; border:1px solid #eeeeee;">
+                <p style="margin:0; font-size:14px; color:#444; line-height:1.6; white-space:pre-line;">
+                    ${description}
+                </p>
+            </div>
+
+        </td>
+    </tr>
+
+    <!-- FOOTER -->
+    <tr>
+        <td style="background-color:#f9f9f9; padding:25px; text-align:center;">
+            <p style="margin:0; font-size:12px; color:#999;">
+                Questa email è stata inviata dal modulo contatti del sito Aeterna Beauty.
+            </p>
+        </td>
+    </tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>`
+        },
+        (err) => {
+            if (err) return next(err)
+        }
+    );
+
+    res.json({
+        message: "Richiesta di supporto inviata correttamenta",
+    })
+}
+
+export default sendContacts
