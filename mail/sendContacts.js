@@ -51,7 +51,7 @@ function sendContacts(req, res, next) {
     <tr>
         <td style="background-color:#9fad96; padding:30px; text-align:center;">
             <h1 style="margin:0; color:#ffffff; font-size:24px; letter-spacing:1px;">
-                AETERNA BEAUTY
+                AETERNA SKIN
             </h1>
             <p style="margin:10px 0 0 0; color:#ffffff; font-size:15px; opacity:0.9;">
                 Nuova richiesta di contatto
@@ -106,7 +106,7 @@ function sendContacts(req, res, next) {
     <tr>
         <td style="background-color:#f9f9f9; padding:25px; text-align:center;">
             <p style="margin:0; font-size:12px; color:#999;">
-                Questa email è stata inviata dal modulo contatti del sito Aeterna Beauty.
+                Questa email è stata inviata dal modulo contatti del sito Aeterna Skin.
             </p>
         </td>
     </tr>
@@ -147,7 +147,7 @@ function sendContacts(req, res, next) {
     <tr>
         <td style="background-color:#9fad96; padding:30px; text-align:center;">
             <h1 style="margin:0; color:#ffffff; font-size:24px; letter-spacing:1px;">
-                AETERNA BEAUTY
+                AETERNA SKIN
             </h1>
             <p style="margin:10px 0 0 0; color:#ffffff; font-size:15px; opacity:0.9;">
                 Richiesta di supporto ricevuta
@@ -191,7 +191,7 @@ function sendContacts(req, res, next) {
             </div>
 
             <p style="margin:30px 0 0 0; font-size:14px; color:#777; line-height:1.6;">
-                Grazie per aver scelto <strong>Aeterna Beauty</strong>.<br>
+                Grazie per aver scelto <strong>Aeterna Skin</strong>.<br>
                 Siamo qui per aiutarti.
             </p>
 
@@ -205,12 +205,12 @@ function sendContacts(req, res, next) {
                 Se hai bisogno di ulteriore assistenza:
             </p>
             <p style="margin:0; font-size:13px;">
-                <a href="mailto:assistenza@aeternabeauty.it" style="color:#9fad96; text-decoration:none;">
-                    assistenza@aeternabeauty.it
+                <a href="mailto:assistenza@aeternaskin.it" style="color:#9fad96; text-decoration:none;">
+                    assistenza@aeternaskin.it
                 </a>
             </p>
             <p style="margin-top:20px; font-size:11px; color:#bbb;">
-                © 2026 Aeterna Beauty - Tutti i diritti riservati
+                © 2026 Aeterna Skin - Tutti i diritti riservati
             </p>
         </td>
     </tr>
