@@ -14,7 +14,6 @@ function sendEmail(req, res, next) {
         total_price, 
         shipping_price } = req.body;
 
-        console.log(products);
         
 
     if (!invoiceId) {
