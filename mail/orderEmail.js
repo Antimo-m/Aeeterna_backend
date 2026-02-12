@@ -3,23 +3,23 @@ import transporter from "./trasporter.js";
 function sendEmail(req, res, next) {
     console.log("Invio email...");
 
-    const { invoiceId, customerEmail, products, name, 
-        surname, 
-        phone, 
-        street, 
-        city, 
-        postal_code, 
-        province, 
-        country, 
-        total_price, 
+    const { invoiceId, customerEmail, products, name,
+        surname,
+        phone,
+        street,
+        city,
+        postal_code,
+        province,
+        country,
+        total_price,
         shipping_price } = req.body;
 
-        
+
 
     if (!invoiceId) {
         return res.status(400).json({ error: "invoiceId mancante" });
     }
-const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
     const info = transporter.sendMail(
         {
             from: process.env.MAIL_USER,
@@ -120,7 +120,7 @@ const baseUrl = `${req.protocol}://${req.get("host")}`;
                         Totale:
                     </td>
                     <td align="right" style="font-size:16px; font-weight:600; color:#333;">
-                         ${total_price} €
+                         ${parseFloat(total_price).toFixed(2)} €
                     </td>
                 </tr>
             </table>
@@ -186,7 +186,7 @@ const baseUrl = `${req.protocol}://${req.get("host")}`;
                     to: "l.summa94@gmail.com",
                     subject: "Nuovo ordine ricevuto",
                     text: `Nuovo ordine creato da ${name} ${surname}. ID: ${invoiceId}`,
-                    html:`
+                    html: `
     <!DOCTYPE html>
     <html>
     <head><meta charset="UTF-8"></head>
